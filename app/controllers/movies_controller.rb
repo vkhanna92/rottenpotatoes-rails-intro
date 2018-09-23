@@ -11,8 +11,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    if params[:format] == "title_sort"
+        @movies = Movie.order(:title)
+    elsif params[:format] == "release_sort"
+        @movies = Movie.order(:release_date)
+    else
+      @movies = Movie.all
+    end
+    @all_ratings = Movie.all_ratings.keys
+    @filtered_ratings = params[:ratings] || []
+    puts @filtered_ratings
+    @movies = @movies.where("rating IN (?)", params[:ratings].keys) if params[:ratings].present? and params[:ratings].any?
+   #@movies = Movie.all
   end
+  
 
   def new
     # default: render 'new' template
